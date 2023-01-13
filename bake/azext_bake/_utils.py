@@ -219,6 +219,16 @@ def get_install_powershell_scripts(image: Image) -> List[PowershellScript]:
 
     return scripts
 
+def get_install_activesetup_commands(image: Image) -> List[str]:
+    
+    logger.info('Getting activesetup commands dictionary from image.yaml')
+    if image.install is None or image.install.activesetup is None:
+        return None
+
+    if image.install.activesetup.commands is None:
+        raise ValidationError('Image install.activesetup must include a commands section')
+
+    return image.install.activesetup.commands
 
 def _validate_file_path(path, name=None) -> Path:
     file_path = (path if isinstance(path, Path) else Path(path)).resolve()

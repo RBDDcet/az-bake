@@ -9,6 +9,7 @@ import os
 import shutil
 import subprocess
 import sys
+import uuid
 
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -278,6 +279,41 @@ def inject_winget_provisioners(image_dir: Path, winget_packages: Sequence[Winget
   {BAKE_PLACEHOLDER}'''
 
     _inject_provisioner(image_dir, winget_install)
+
+def inject_activesetup_provisioners(image_dir: Path, activesetup_commands: Sequence[str]):
+    '''Injects the Windows shell provisioner into the packer build file'''
+
+    current_index = 0
+    inject_restart = False
+
+    activesetup_provisioner = '''
+  # Injected by az bake
+  provisioner "windows-shell" {
+    elevated_user     = build.User
+    elevated_password = build.Password
+    inline = [
+'''
+
+    for i, activesetup_command in enumerate(activesetup_commands):
+        current_index = i
+
+        activesetup_provisioner += f'      REG ADD "HKLM\\Software\\Microsoft\\Active Setup\\Installed Components\\{uuid.uuid4()}\\ /v StubPath /d {activesetup_command}" /t REG_SZ'
+        logger.info(f'test: {activesetup_command}')
+        if i < len(activesetup_commands) - 1:
+            activesetup_provisioner += ',\n'
+
+    activesetup_provisioner += f'''
+    ]
+  }}
+  {BAKE_PLACEHOLDER}'''
+
+    _inject_provisioner(image_dir, activesetup_provisioner)
+
+    if inject_restart:
+        inject_restart_provisioner(image_dir)
+
+        if current_index < len(activesetup_commands) - 1:
+            inject_powershell_provisioner(image_dir, activesetup_commands[current_index + 1:])
 
 
 def _inject_provisioner(image_dir: Path, provisioner: str):
