@@ -3,6 +3,14 @@
 Release History
 ===============
 
+0.3.10
+++++++
+* Revert bug that could create log file
+
+0.3.9
+++++++
+* Save all image config files to builder storage
+
 0.3.8
 ++++++
 * Filter Azure DevOps pipelines trigger
