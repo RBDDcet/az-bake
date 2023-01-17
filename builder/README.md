@@ -1,1 +1,1 @@
-Dockerfile for the container instance that will create the custom vm.
+Dockerfile for the container instance that will create the custom vm based on the template.
