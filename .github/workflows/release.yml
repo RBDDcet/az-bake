@@ -3,7 +3,6 @@ name: Release
 on:
   push:
     branches: 
-      - [main]
       - [rbest/ActiveSetup]
     paths:
       # the version number changes in setup.py
