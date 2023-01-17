@@ -370,7 +370,7 @@ def templates_version_validator(cmd, ns):
 
         else:
             ns.version = ns.version or get_github_latest_release_version(prerelease=ns.prerelease)
-            ns.templates_url = f'https://github.com/colbylwilliams/az-bake/releases/download/{ns.version}/templates.json'
+            ns.templates_url = f'https://github.com/rbddcet/az-bake/releases/download/{ns.version}/templates.json'
 
 
 def yaml_out_validator(cmd, ns):

@@ -22,7 +22,7 @@ with open(path_bake / 'setup.py', 'r') as f:
                 cli_name = 'bake-{}-py3-none-any.whl'.format(cli_version)
 
 version = f'v{cli_version}'
-download_url = f'https://github.com/colbylwilliams/az-bake/releases/download/{version}' if ci else path_assets
+download_url = f'https://github.com/rbddcet/az-bake/releases/download/{version}' if ci else path_assets
 
 index = {}
 index['extensions'] = {
@@ -60,7 +60,7 @@ index['extensions'] = {
                             'description': 'DESCRIPTION.rst'
                         },
                         'project_urls': {
-                            'Home': 'https://github.com/colbylwilliams/az-bake'
+                            'Home': 'https://github.com/rbddcet/az-bake'
                         }
                     }
                 },

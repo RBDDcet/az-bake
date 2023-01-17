@@ -50,7 +50,7 @@ setup(
     license='MIT',
     author='Microsoft Corporation',
     author_email='colbyw@microsoft.com',
-    url='https://github.com/colbylwilliams/az-bake',
+    url='https://github.com/rbddcet/az-bake',
     long_description=README + '\n\n' + HISTORY,
     classifiers=CLASSIFIERS,
     packages=find_packages(),

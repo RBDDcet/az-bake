@@ -12,4 +12,4 @@ Usage
 License
 =======
 
-`MIT <https://github.com/colbylwilliams/az-bake/blob/main/LICENSE>`__
+`MIT <https://github.com/rbddcet/az-bake/blob/main/LICENSE>`__
