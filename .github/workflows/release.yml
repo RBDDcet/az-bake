@@ -91,8 +91,7 @@ jobs:
       - name: Change Repo changes
         run: 'echo "REPO_LC=${REPO,,}" >>${GITHUB_ENV}'
         env:
-          REPO_LC: ${{ github.repository}}
-
+          REPO: ${{ github.repository}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
