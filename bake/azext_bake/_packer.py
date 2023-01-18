@@ -298,8 +298,8 @@ def inject_activesetup_provisioners(image_dir: Path, activesetup_commands: Seque
     for i, activesetup_command in enumerate(activesetup_commands):
         current_index = i
 
-        activesetup_provisioner += f'      REG ADD "HKLM\\Software\\Microsoft\\Active Setup\\Installed Components"'
-        '"\\{uuid.uuid4()}\\ /v StubPath /d {activesetup_command}" /t REG_SZ'
+        activesetup_provisioner += '      REG ADD "HKLM\\Software\\Microsoft\\Active Setup\\Installed Components"'
+        f'"\\{uuid.uuid4()}\\ /v StubPath /d {activesetup_command}" /t REG_SZ'
         logger.info(f'test: {activesetup_command}')
         if i < len(activesetup_commands) - 1:
             activesetup_provisioner += ',\n'
