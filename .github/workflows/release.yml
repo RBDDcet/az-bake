@@ -93,7 +93,7 @@ jobs:
         env:
           BUILD_DATE: ${{ steps.build_date.outputs.date }}
           IMAGE_VERSION: ${{ steps.cli_version.outputs.version }}
-          IMAGE_REPOSITORY: ${{ github.repository,, }}
+          IMAGE_REPOSITORY: ${{ github.repository }}
         with:
           context: ./builder
           # file: ./builder/Dockerfile
@@ -103,5 +103,5 @@ jobs:
             BUILD_DATE=${{ env.BUILD_DATE }}
             IMAGE_VERSION=${{ env.IMAGE_VERSION }}
           tags: |
-            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}
+            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY,,}}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY,,}}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}
