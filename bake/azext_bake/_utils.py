@@ -251,7 +251,6 @@ def get_install_powershell_scripts(image: Image) -> List[PowershellScript]:
     return scripts
 
 def get_install_activesetup_commands(image: Image) -> List[str]:
-    
     logger.info('Getting activesetup commands dictionary from image.yaml')
     if image.install is None or image.install.activesetup is None:
         return None

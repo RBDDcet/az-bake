@@ -443,7 +443,7 @@ def bake_builder_build(cmd, sandbox: Sandbox = None, gallery: Gallery = None, im
 
         machine_choco_packages = [package for package in choco_packages if not package.user]
         if machine_choco_packages:
-            machine_choco_config =  get_choco_package_config(machine_choco_packages)
+            machine_choco_config = get_choco_package_config(machine_choco_packages)
             inject_choco_provisioners(image.dir, machine_choco_config, for_user=False)
 
         # winget_config = get_install_winget(image)
