@@ -280,6 +280,7 @@ def inject_winget_provisioners(image_dir: Path, winget_packages: Sequence[Winget
 
     _inject_provisioner(image_dir, winget_install)
 
+
 def inject_activesetup_provisioners(image_dir: Path, activesetup_commands: Sequence[str]):
     '''Injects the Windows shell provisioner into the packer build file'''
 
