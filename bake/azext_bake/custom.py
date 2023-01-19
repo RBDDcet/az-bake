@@ -294,7 +294,7 @@ def bake_image_bump(cmd, repository_path='./', image_names: Sequence[str] = None
         version_old = parse_version(version)
 
         if len(version_old.release) != 3:
-            raise CLIError(f'Version must be in the format major.minro.patch (found: {version})')
+            raise CLIError(f'Version must be in the format major.minor.patch (found: {version})')
 
         n_major = version_old.major + 1 if major else version_old.major
         n_minor = 0 if major else version_old.minor + 1 if minor else version_old.minor

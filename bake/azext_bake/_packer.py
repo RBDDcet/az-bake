@@ -295,14 +295,15 @@ def inject_activesetup_provisioners(image_dir: Path, activesetup_commands: Seque
     inline = [
 '''
 
-    for i, activesetup_command in enumerate(activesetup_commands):
+    for i, activesetup_cmd in enumerate(activesetup_commands):
         current_index = i
+        activesetup_id = uuid.uuid4()
 
-        regcommandwithuuid = f'REG ADD "HKLM\\Software\\Microsoft\\Active Setup\\Installed Components\\{uuid.uuid4()}"'
-        setupcommand = f'"\\ /v StubPath /d {activesetup_command}"'
+        base_reg_key = f"HKLM\\Software\\Microsoft\\Active Setup\\Installed Components\\{activesetup_id}"
 
-        activesetup_provisioner += f'      {regcommandwithuuid}{setupcommand} /t REG_SZ'
-        logger.info(f'test: {activesetup_command}')
+        activesetup_provisioner += f'   REG ADD "{base_reg_key}\\" /v StubPath /d {activesetup_cmd} /t REG_SZ'
+        activesetup_provisioner += f'   REG ADD "{base_reg_key}" /v "Bake Generated Setup"'
+
         if i < len(activesetup_commands) - 1:
             activesetup_provisioner += ',\n'
 
