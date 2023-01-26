@@ -16,11 +16,10 @@ from typing import Any, Mapping, Sequence
 
 from azure.cli.core.azclierror import ValidationError
 
-from ._constants import (BAKE_PLACEHOLDER, CHOCO_PACKAGES_CONFIG_FILE, CHOCO_PACKAGES_USER_CONFIG_FILE,
-                         PKR_AUTO_VARS_FILE, PKR_BUILD_FILE, PKR_DEFAULT_VARS, PKR_PROVISIONER_CHOCO,
+from ._constants import (BAKE_PLACEHOLDER, PKR_AUTO_VARS_FILE, PKR_BUILD_FILE, PKR_DEFAULT_VARS,
                          PKR_PROVISIONER_CHOCO_INSTALL, PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG,
-                         PKR_PROVISIONER_CHOCO_USER, PKR_PROVISIONER_RESTART, PKR_PROVISIONER_UPDATE,
-                         PKR_PROVISIONER_WINGET_INSTALL, PKR_VARS_FILE, WINGET_SETTINGS_FILE, WINGET_SETTINGS_JSON)
+                         PKR_PROVISIONER_RESTART, PKR_PROVISIONER_UPDATE, PKR_PROVISIONER_WINGET_INSTALL,
+                         PKR_VARS_FILE, WINGET_SETTINGS_FILE, WINGET_SETTINGS_JSON)
 from ._data import Gallery, Image, PowershellScript, Sandbox, WingetPackage, get_dict
 from ._utils import get_logger, get_templates_path, get_choco_package_setup
 
@@ -244,11 +243,11 @@ def inject_choco_machine_provisioners(image_dir: Path, choco_packages):
     inline = [
 '''
     for i, choco_package in enumerate(choco_packages):
-         current_index = i
-         choco_system_provisioner += f'      {get_choco_package_setup(choco_package)}'
+        current_index = i
+        choco_system_provisioner += f'      {get_choco_package_setup(choco_package)}'
 
-         if i < len(choco_packages) - 1:
-             choco_system_provisioner += ',\n'
+        if i < len(choco_packages) - 1:
+            choco_system_provisioner += ',\n'
 
     choco_system_provisioner += f'''
     ]
@@ -261,7 +260,6 @@ def inject_choco_machine_provisioners(image_dir: Path, choco_packages):
 
         if current_index < len(choco_packages) - 1:
             inject_powershell_provisioner(image_dir, choco_packages[current_index + 1:])
-
 
 
 def inject_choco_user_provisioners(image_dir: Path, choco_packages):
@@ -280,8 +278,8 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
         activesetup_id = uuid.uuid4()
 
         base_reg_key = f"HKLM\\Software\\Microsoft\\Active Setup\\Installed Components\\{activesetup_id}"
-
-        choco_user_provisioner += f'      REG ADD "{base_reg_key}\\ " /v StubPath /d "{get_choco_package_setup(choco_package)}" /t REG_SZ, \n'
+        choco_str = get_choco_package_setup(choco_package)
+        choco_user_provisioner += f'      REG ADD "{base_reg_key}\\ " /v StubPath /d "{choco_str}" /t REG_SZ, \n'
         choco_user_provisioner += f'      REG ADD "{base_reg_key}" /v "{choco_package.id} Setup"'
 
         if i < len(choco_packages) - 1:
@@ -292,6 +290,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
   }}
   {BAKE_PLACEHOLDER}'''
     _inject_provisioner(image_dir, choco_user_provisioner)
+
 
 def inject_winget_provisioners(image_dir: Path, winget_packages: Sequence[WingetPackage]):
     '''Injects the winget provisioners into the packer build file'''

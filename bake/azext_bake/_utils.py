@@ -195,8 +195,8 @@ def get_choco_package_setup(package: ChocoPackage) -> str:
     pkg = get_dict(package)
     if 'user' in pkg:
         del pkg['user']
-    choco_setup_string = f'choco install '
-    
+    choco_setup_string = 'choco install '
+
     for key in pkg:
         if key.__eq__("id"):
             choco_setup_string += f'{pkg[key]}'
@@ -205,6 +205,7 @@ def get_choco_package_setup(package: ChocoPackage) -> str:
 
     choco_setup_string += ' --yes --no-progress'
     return choco_setup_string
+
 
 def get_install_winget(image: Image):
     # TODO
