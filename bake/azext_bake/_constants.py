@@ -118,7 +118,7 @@ PKR_PROVISIONER_RESTART = f'''
   }}
   {BAKE_PLACEHOLDER}'''
 
-PKR_PROVISIONER_CHOCO = f'''
+PKR_PROVISIONER_CHOCO_INSTALL = f'''
   # Injected by az bake
   provisioner "powershell" {{
     environment_vars = ["chocolateyUseWindowsCompression=false"]
@@ -127,7 +127,18 @@ PKR_PROVISIONER_CHOCO = f'''
       "& C:/Windows/Temp/chocolatey.ps1"
     ]
   }}
+  {BAKE_PLACEHOLDER}'''
 
+PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG = f'''
+  # Injected by az bake
+  provisioner "file" {{
+    source = "C:/ProgramData/chocolatey/logs/chocolatey.log"
+    destination = "{OUTPUT_DIR}/chocolatey.log"
+    direction = "download"
+  }}
+  {BAKE_PLACEHOLDER}'''
+
+PKR_PROVISIONER_CHOCO = f'''
   # Injected by az bake
   provisioner "file" {{
     source = "${{path.root}}/{CHOCO_PACKAGES_CONFIG_FILE}"
@@ -141,13 +152,6 @@ PKR_PROVISIONER_CHOCO = f'''
     inline = [
       "choco install C:/Windows/Temp/{CHOCO_PACKAGES_CONFIG_FILE} --yes --no-progress"
     ]
-  }}
-
-  # Injected by az bake
-  provisioner "file" {{
-    source = "C:/ProgramData/chocolatey/logs/chocolatey.log"
-    destination = "{OUTPUT_DIR}/chocolatey.log"
-    direction = "download"
   }}
   {BAKE_PLACEHOLDER}'''
 

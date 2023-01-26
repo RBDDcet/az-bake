@@ -181,12 +181,30 @@ def get_choco_package_config(packages: Sequence[ChocoPackage], indent=2) -> str:
         # child.text = pkg
         elem.append(child)
     # prettify
+
     xml_string = tostring(elem).decode("utf-8")
     xml_string = minidom.parseString(xml_string)
     xml_string = xml_string.toprettyxml(indent=' ' * indent)
 
     return xml_string
 
+
+def get_choco_package_setup(package: ChocoPackage) -> str:
+    '''Get the chocolatey package setup string'''
+    logger.info('Getting choco package setup contents from install dict')
+    pkg = get_dict(package)
+    if 'user' in pkg:
+        del pkg['user']
+    choco_setup_string = f'choco install '
+    
+    for key in pkg:
+        if key.__eq__("id"):
+            choco_setup_string += f'{pkg[key]}'
+        else:
+            choco_setup_string += f' -{key} "{pkg[key]}"'
+
+    choco_setup_string += ' --yes --no-progress'
+    return choco_setup_string
 
 def get_install_winget(image: Image):
     # TODO

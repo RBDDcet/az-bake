@@ -18,10 +18,11 @@ from azure.cli.core.azclierror import ValidationError
 
 from ._constants import (BAKE_PLACEHOLDER, CHOCO_PACKAGES_CONFIG_FILE, CHOCO_PACKAGES_USER_CONFIG_FILE,
                          PKR_AUTO_VARS_FILE, PKR_BUILD_FILE, PKR_DEFAULT_VARS, PKR_PROVISIONER_CHOCO,
+                         PKR_PROVISIONER_CHOCO_INSTALL, PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG,
                          PKR_PROVISIONER_CHOCO_USER, PKR_PROVISIONER_RESTART, PKR_PROVISIONER_UPDATE,
                          PKR_PROVISIONER_WINGET_INSTALL, PKR_VARS_FILE, WINGET_SETTINGS_FILE, WINGET_SETTINGS_JSON)
 from ._data import Gallery, Image, PowershellScript, Sandbox, WingetPackage, get_dict
-from ._utils import get_logger, get_templates_path
+from ._utils import get_logger, get_templates_path, get_choco_package_setup
 
 logger = get_logger(__name__)
 
@@ -219,17 +220,78 @@ def inject_powershell_provisioner(image_dir: Path, powershell_scripts: Sequence[
             inject_powershell_provisioner(image_dir, powershell_scripts[current_index + 1:])
 
 
-def inject_choco_provisioners(image_dir: Path, config_xml, for_user=False):
-    '''Injects the chocolatey provisioners into the packer build file'''
-    # create the choco packages config file
-    file_name = CHOCO_PACKAGES_USER_CONFIG_FILE if for_user else CHOCO_PACKAGES_CONFIG_FILE
+def inject_choco_install_provisioners(image_dir: Path):
+    '''Injects the chocolatey install provisioner into the packer build file'''
+    _inject_provisioner(image_dir, PKR_PROVISIONER_CHOCO_INSTALL)
 
-    logger.info(f'Creating file: {image_dir / file_name}')
-    with open(image_dir / file_name, 'w', encoding='utf-8') as f:
-        f.write(config_xml)
 
-    _inject_provisioner(image_dir, PKR_PROVISIONER_CHOCO_USER if for_user else PKR_PROVISIONER_CHOCO)
+def inject_choco_machine_log_provisioners(image_dir: Path):
+    '''Injects the chocolatey install provisioner into the packer build file'''
+    _inject_provisioner(image_dir, PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG)
 
+
+def inject_choco_machine_provisioners(image_dir: Path, choco_packages):
+    '''Injects the chocolatey machine provisioner into the packer build file'''
+
+    current_index = 0
+    inject_restart = False
+
+    choco_system_provisioner = '''
+  # Injected by az bake
+  provisioner "powershell" {
+    elevated_user     = build.User
+    elevated_password = build.Password
+    inline = [
+'''
+    for i, choco_package in enumerate(choco_packages):
+         current_index = i
+         choco_system_provisioner += f'      {get_choco_package_setup(choco_package)}'
+
+         if i < len(choco_packages) - 1:
+             choco_system_provisioner += ',\n'
+
+    choco_system_provisioner += f'''
+    ]
+  }}
+  {BAKE_PLACEHOLDER}'''
+    _inject_provisioner(image_dir, choco_system_provisioner)
+
+    if inject_restart:
+        inject_restart_provisioner(image_dir)
+
+        if current_index < len(choco_packages) - 1:
+            inject_powershell_provisioner(image_dir, choco_packages[current_index + 1:])
+
+
+
+def inject_choco_user_provisioners(image_dir: Path, choco_packages):
+    '''Injects the chocolatey user provisioner into the packer build file'''
+
+    choco_user_provisioner = '''
+  # Injected by az bake
+  provisioner "windows-shell" {
+    elevated_user     = build.User
+    elevated_password = build.Password
+    inline = [
+'''
+
+    for i, choco_package in enumerate(choco_packages):
+
+        activesetup_id = uuid.uuid4()
+
+        base_reg_key = f"HKLM\\Software\\Microsoft\\Active Setup\\Installed Components\\{activesetup_id}"
+
+        choco_user_provisioner += f'      REG ADD "{base_reg_key}\\ " /v StubPath /d "{get_choco_package_setup(choco_package)}" /t REG_SZ, \n'
+        choco_user_provisioner += f'      REG ADD "{base_reg_key}" /v "{choco_package.id} Setup"'
+
+        if i < len(choco_packages) - 1:
+            choco_user_provisioner += ',\n'
+
+        choco_user_provisioner += f'''
+    ]
+  }}
+  {BAKE_PLACEHOLDER}'''
+    _inject_provisioner(image_dir, choco_user_provisioner)
 
 def inject_winget_provisioners(image_dir: Path, winget_packages: Sequence[WingetPackage]):
     '''Injects the winget provisioners into the packer build file'''
@@ -279,46 +341,6 @@ def inject_winget_provisioners(image_dir: Path, winget_packages: Sequence[Winget
   {BAKE_PLACEHOLDER}'''
 
     _inject_provisioner(image_dir, winget_install)
-
-
-def inject_activesetup_provisioners(image_dir: Path, activesetup_commands: Sequence[str]):
-    '''Injects the Windows shell provisioner into the packer build file'''
-
-    current_index = 0
-    inject_restart = False
-
-    activesetup_provisioner = '''
-  # Injected by az bake
-  provisioner "windows-shell" {
-    elevated_user     = build.User
-    elevated_password = build.Password
-    inline = [
-'''
-
-    for i, activesetup_cmd in enumerate(activesetup_commands):
-        current_index = i
-        activesetup_id = uuid.uuid4()
-
-        base_reg_key = f"HKLM\\Software\\Microsoft\\Active Setup\\Installed Components\\{activesetup_id}"
-
-        activesetup_provisioner += f'   REG ADD "{base_reg_key}\\" /v StubPath /d {activesetup_cmd} /t REG_SZ'
-        activesetup_provisioner += f'   REG ADD "{base_reg_key}" /v "Bake Generated Setup"'
-
-        if i < len(activesetup_commands) - 1:
-            activesetup_provisioner += ',\n'
-
-    activesetup_provisioner += f'''
-    ]
-  }}
-  {BAKE_PLACEHOLDER}'''
-
-    _inject_provisioner(image_dir, activesetup_provisioner)
-
-    if inject_restart:
-        inject_restart_provisioner(image_dir)
-
-        if current_index < len(activesetup_commands) - 1:
-            inject_powershell_provisioner(image_dir, activesetup_commands[current_index + 1:])
 
 
 def _inject_provisioner(image_dir: Path, provisioner: str):

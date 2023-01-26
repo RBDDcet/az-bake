@@ -24,12 +24,13 @@ from ._constants import (BAKE_YAML_SCHEMA, DEVOPS_PIPELINE_CONTENT, DEVOPS_PIPEL
                          IMAGE_DEFAULT_BASE_WINDOWS, IMAGE_YAML_SCHEMA, IN_BUILDER)
 from ._data import Gallery, Image, Sandbox, get_dict
 from ._github import get_github_latest_release_version, get_github_release, get_release_templates, get_template_url
-from ._packer import (copy_packer_files, inject_choco_provisioners, inject_powershell_provisioner,
-                      inject_update_provisioner, inject_activesetup_provisioners, packer_execute, save_packer_vars_file)
+from ._packer import (copy_packer_files, inject_choco_install_provisioners, inject_choco_machine_provisioners,
+                      inject_choco_user_provisioners, inject_choco_machine_log_provisioners, inject_powershell_provisioner,
+                      inject_update_provisioner, packer_execute, save_packer_vars_file)
 from ._repos import Repo
 from ._sandbox import get_builder_subnet_id, get_sandbox_resource_names
-from ._utils import (copy_to_builder_output_dir, get_choco_package_config, get_install_choco_packages,
-                     get_install_powershell_scripts, get_install_activesetup_commands, get_logger, get_templates_path)
+from ._utils import (copy_to_builder_output_dir, get_choco_package_config, get_choco_package_setup, get_install_choco_packages,
+                     get_install_powershell_scripts, get_logger, get_templates_path)
 
 logger = get_logger(__name__)
 
@@ -435,24 +436,22 @@ def bake_builder_build(cmd, sandbox: Sandbox = None, gallery: Gallery = None, im
             inject_powershell_provisioner(image.dir, powershell_scripts)
 
         choco_packages = get_install_choco_packages(image)
+        # install choco packages if packages
+        if choco_packages:
+            inject_choco_install_provisioners(image.dir)
 
         user_choco_packages = [package for package in choco_packages if package.user]
         if user_choco_packages:
-            choco_user_config = get_choco_package_config(user_choco_packages)
-            inject_choco_provisioners(image.dir, choco_user_config, for_user=True)
+            inject_choco_user_provisioners(image.dir, user_choco_packages)
 
         machine_choco_packages = [package for package in choco_packages if not package.user]
         if machine_choco_packages:
-            machine_choco_config = get_choco_package_config(machine_choco_packages)
-            inject_choco_provisioners(image.dir, machine_choco_config, for_user=False)
+            inject_choco_machine_provisioners(image.dir, machine_choco_packages)
+            inject_choco_machine_log_provisioners(image.dir)
 
         # winget_config = get_install_winget(image)
         # if winget_config:
         #     inject_winget_provisioners(image.dir, winget_config)
-
-        activesetup_commands = get_install_activesetup_commands(image)
-        if activesetup_commands:
-            inject_activesetup_provisioners(image.dir, activesetup_commands)
 
     save_packer_vars_file(sandbox, gallery, image)
 
