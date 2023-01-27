@@ -124,7 +124,7 @@ PKR_PROVISIONER_CHOCO_INSTALL = f'''
     environment_vars = ["chocolateyUseWindowsCompression=false"]
     inline = [
       "(new-object net.webclient).DownloadFile('https://chocolatey.org/install.ps1', 'C:/Windows/Temp/chocolatey.ps1')",
-      "& C:/Windows/Temp/chocolatey.ps1"
+      "C:/Windows/Temp/chocolatey.ps1"
     ]
   }}
   {BAKE_PLACEHOLDER}'''
