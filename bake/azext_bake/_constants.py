@@ -138,41 +138,6 @@ PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG = f'''
   }}
   {BAKE_PLACEHOLDER}'''
 
-PKR_PROVISIONER_CHOCO = f'''
-  # Injected by az bake
-  provisioner "file" {{
-    source = "${{path.root}}/{CHOCO_PACKAGES_CONFIG_FILE}"
-    destination = "C:/Windows/Temp/{CHOCO_PACKAGES_CONFIG_FILE}"
-  }}
-
-  # Injected by az bake
-  provisioner "powershell" {{
-    elevated_user     = build.User
-    elevated_password = build.Password
-    inline = [
-      "choco install C:/Windows/Temp/{CHOCO_PACKAGES_CONFIG_FILE} --yes --no-progress"
-    ]
-  }}
-  {BAKE_PLACEHOLDER}'''
-
-PKR_PROVISIONER_CHOCO_USER = f'''
-  # Injected by az bake
-  provisioner "file" {{
-    source = "${{path.root}}/{CHOCO_PACKAGES_USER_CONFIG_FILE}"
-    destination = "C:/Windows/Temp/{CHOCO_PACKAGES_USER_CONFIG_FILE}"
-  }}
-
-  # Injected by az bake
-  provisioner "powershell" {{
-    elevated_user     = build.User
-    elevated_password = build.Password
-    inline = [
-      "New-Item -Path 'HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Active Setup\\\\Installed Components' -Name '7cc2318a-b226-4fdd-84c6-31e5f4dd9e4f' -Value 'Install Chocolatey Packages'",
-      "New-ItemProperty 'HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Active Setup\\\\Installed Components\\\\7cc2318a-b226-4fdd-84c6-31e5f4dd9e4f' -Name StubPath -Value 'choco install C:/Windows/Temp/{CHOCO_PACKAGES_USER_CONFIG_FILE} --yes --no-progress'"
-    ]
-  }}
-  {BAKE_PLACEHOLDER}'''
-
 WINGET_SETTINGS_FILE = 'settings.json'
 
 WINGET_INSTALLER_SRC = 'https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle'
