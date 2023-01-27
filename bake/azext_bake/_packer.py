@@ -279,7 +279,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
 
         base_reg_key = f"HKLM\\Software\\Microsoft\\Active Setup\\Installed Components\\{activesetup_id}"
         choco_str = get_choco_package_setup(choco_package)
-        choco_user_provisioner += f'      "REG ADD ""{base_reg_key}\\ "" /v StubPath /d ""{choco_str}"" /t REG_SZ," \n'
+        choco_user_provisioner += f'      "REG ADD ""{base_reg_key}\\ "" /v StubPath /d ""{choco_str}"" /t REG_SZ", \n'
         choco_user_provisioner += f'      "REG ADD ""{base_reg_key}"" /v ""{choco_package.id} Setup"""'
 
         if i < len(choco_packages) - 1:
