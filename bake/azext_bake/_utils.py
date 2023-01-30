@@ -199,9 +199,9 @@ def get_choco_package_setup(package: ChocoPackage) -> str:
 
     for key in pkg:
         if key.__eq__("id"):
-            choco_setup_string += f'{pkg[key]}'
+            choco_setup_string += f"{pkg[key]}"
         else:
-            choco_setup_string += f' -{key} "{pkg[key]}"'
+            choco_setup_string += f" -{key} '{pkg[key]}'"
 
     choco_setup_string += ' --yes --no-progress'
     return choco_setup_string
