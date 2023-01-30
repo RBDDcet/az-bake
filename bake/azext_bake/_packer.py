@@ -277,7 +277,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
 
         activesetup_id = uuid.uuid4()
 
-        base_reg_key = 'HKLM:\\Software\\Microsoft\\Active Setup\\Installed Components\\'
+        base_reg_key = 'HKLM:\\\\Software\\\\Microsoft\\\\Active Setup\\\\Installed Components\\\\'
         base_reg_key_newitem = f'      "New-Item -Path \'{base_reg_key} \' -Name {activesetup_id}'
         base_reg_key_property = f'      "New-ItemProperty \'{base_reg_key}{activesetup_id}\''
 
