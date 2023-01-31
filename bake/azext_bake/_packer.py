@@ -278,13 +278,13 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
         activesetup_id = uuid.uuid4()
 
         base_reg_key = 'HKLM:\\\\Software\\\\Microsoft\\\\Active Setup\\\\Installed Components\\\\'
-        base_reg_key_newitem = f'      "New-Item -Path \'{base_reg_key} \' -Name \'{activesetup_id}\''
-        base_reg_key_property = f'      "New-ItemProperty \'{base_reg_key}{activesetup_id}\''
+        base_reg_key_newitem = f'      "New-Item -Path \"{base_reg_key}\" -Name \"{activesetup_id}\"'
+        base_reg_key_property = f'      "New-ItemProperty \"{base_reg_key}{activesetup_id}\"'
 
         choco_str = get_choco_package_setup(choco_package)
-        choco_user_provisioner += f"{base_reg_key_newitem} -Value '{choco_package.id} Setup'\""
+        choco_user_provisioner += f'{base_reg_key_newitem} -Value \"{choco_package.id} Setup\""'
         choco_user_provisioner += ',\n'
-        choco_user_provisioner += f"{base_reg_key_property} -Name 'StubPath' -Value '{choco_str}'\""
+        choco_user_provisioner += f'{base_reg_key_property} -Name \"StubPath\" -Value \"{choco_str}\""'
 
         if i < len(choco_packages) - 1:
             choco_user_provisioner += ',\n'
