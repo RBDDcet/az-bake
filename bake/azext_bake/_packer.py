@@ -282,7 +282,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
         base_reg_key_property = f'      New-ItemProperty \"{base_reg_key}{activesetup_id}\"'
 
         choco_str = get_choco_package_setup(choco_package)
-        choco_user_provisioner += f'{base_reg_key_newitem} -Value \"{choco_package.id} Setup\" \n'        
+        choco_user_provisioner += f'{base_reg_key_newitem} -Value \"{choco_package.id} Setup\" \n'
         choco_user_provisioner += f'{base_reg_key_property} -Name \"StubPath\" -Value \"{choco_str}\"'
 
         if i < len(choco_packages) - 1:
