@@ -276,12 +276,12 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
 
     task_id = uuid.uuid4()
     task_action = '(New-ScheduledTaskAction -Execute'
-    choco_user_provisioner += '      "$action = `" \n'
+    choco_user_provisioner += '      "$action = `", \n'
     for i, choco_package in enumerate(choco_packages):
         logger.info(f'Building task scheduler {i}, {choco_package.id}')
         choco_args = get_choco_package_setup(choco_package)
-        choco_user_provisioner += f'      "{task_action} \'{choco_package.id}\''
-        choco_user_provisioner += f' Argument {choco_args}),`", \n'
+        choco_user_provisioner += f'      "{task_action} \'choco\''
+        choco_user_provisioner += f' -Argument \'{choco_args}\'),`", \n'
 
     choco_user_provisioner += f'      "{task_action} \'schtask\' -Argument \'/change /tn {task_id} /DISABLE\')", \n'
     choco_user_provisioner += '      "$trigger = New-ScheduleTaskTrigger -AtLogOn", \n'
