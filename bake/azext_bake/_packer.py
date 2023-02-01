@@ -284,7 +284,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
         choco_user_provisioner += f' -Argument \'{choco_args}\'),`", \n'
 
     choco_user_provisioner += f'      "{task_action} \'schtask\' -Argument \'/change /tn {task_id} /DISABLE\')", \n'
-    choco_user_provisioner += '      "$trigger = New-ScheduleTaskTrigger -AtLogOn", \n'
+    choco_user_provisioner += '      "$trigger = New-ScheduledTaskTrigger -AtLogOn", \n'
     choco_user_provisioner += '      "$task = New-ScheduledTask -Action $action -Trigger $trigger", \n'
     choco_user_provisioner += f'      "Register-ScheduledTask \'{task_id}\' -InputObject $task -Force" \n'
     choco_user_provisioner += f'''
