@@ -271,25 +271,24 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
     elevated_user     = build.User
     elevated_password = build.Password
     inline = [
-      "Write-Host 'Setting up User installation via ActiveSetup'",
+      "Write-Host 'Setting up User installation via Task Scheduler'",
 '''
 
+    task_id = uuid.uuid4()
+    task_action = '(New-ScheduledTaskAction -Execute'
+    choco_user_provisioner += '      "$action = `" \n'
     for i, choco_package in enumerate(choco_packages):
+        logger.info(f'Building task scheduler {i}, {choco_package.id}')
+        choco_args = get_choco_package_setup(choco_package)
+        choco_user_provisioner += f'      "{task_action} \'{choco_package.id}\''
+        choco_user_provisioner += f' Argument {choco_args}),`", \n'
 
-        activesetup_id = uuid.uuid4()
+    choco_user_provisioner += f'      "{task_action} \'schtask\' -Argument \'/change /tn {task_id} /DISABLE\')", \n'
+    choco_user_provisioner += '      "$trigger = New-ScheduleTaskTrigger -AtLogOn", \n'
+    choco_user_provisioner += '      "$task = New-ScheduledTask -Action $action -Trigger $trigger", \n'
+    choco_user_provisioner += f'      "Register-ScheduledTask \'{task_id}\' -InputObject $task -Force" \n'
+    choco_user_provisioner += f'''
 
-        base_reg_key = 'HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Active Setup\\\\Installed Components\\\\'
-        base_reg_key_newitem = f'      "New-Item \'{base_reg_key}\' -Name {activesetup_id}'
-        base_reg_key_property = f'      "New-ItemProperty \'{base_reg_key}{activesetup_id}\''
-
-        choco_str = get_choco_package_setup(choco_package)
-        choco_user_provisioner += f'{base_reg_key_newitem} -Value \'{choco_package.id} Setup\'", \n'
-        choco_user_provisioner += f'{base_reg_key_property} -Name \'StubPath\' -Value \'{choco_str}\'"'
-
-        if i < len(choco_packages) - 1:
-            choco_user_provisioner += ',\n'
-
-        choco_user_provisioner += f'''
     ]
   }}
   {BAKE_PLACEHOLDER}'''
