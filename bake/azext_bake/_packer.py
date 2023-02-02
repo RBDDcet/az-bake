@@ -244,7 +244,7 @@ def inject_choco_machine_provisioners(image_dir: Path, choco_packages):
 '''
     for i, choco_package in enumerate(choco_packages):
         current_index = i
-        choco_system_provisioner += f'      "{get_choco_package_setup(choco_package)}"'
+        choco_system_provisioner += f'      "choco {get_choco_package_setup(choco_package)}"'
 
         if i < len(choco_packages) - 1:
             choco_system_provisioner += ',\n'
