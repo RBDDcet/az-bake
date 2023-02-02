@@ -281,10 +281,10 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
         logger.info(f'Building task scheduler {i}, {choco_package.id}')
         choco_args = get_choco_package_setup(choco_package)
         choco_user_provisioner += f'      "{task_action} \'powershell.exe\''
-        pwsh_cmd_a = '-Command ""& {if (-not(choco list --exact '
+        pwsh_cmd_a = '-Command "& {if (-not(choco list --exact '
         pwsh_cmd_b = f'{pwsh_cmd_a} {choco_package.id} --local-only --limit-output))'
         pwsh_cmd_c = ' {choco'
-        pwsh_cmd_d = '}}""'
+        pwsh_cmd_d = '}}"'
         final_cmd = f'{pwsh_cmd_b} {pwsh_cmd_c} {choco_args}{pwsh_cmd_d}'
         choco_user_provisioner += f' -Argument \'{final_cmd}\'),`", \n'
 
