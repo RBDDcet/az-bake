@@ -282,7 +282,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
         choco_args = get_choco_package_setup(choco_package)
         choco_user_provisioner += f'      "{task_action} \'choco\''
         choco_user_provisioner += f' -Argument \'{choco_args}\'),`", \n'
-    
+
     choco_user_provisioner += f'      "{task_action} \'schtask\' -Argument \'/change /tn {task_id} /DISABLE\')", \n'
     choco_user_provisioner += '      "$trigger = New-ScheduledTaskTrigger -AtLogOn", \n'
     choco_user_provisioner += '      "$task = New-ScheduledTask -Action $action -Trigger $trigger", \n'
