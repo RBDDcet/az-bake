@@ -9,7 +9,6 @@
     },
     "wsl2": {
         "id": "wsl2",
-        "installArguments": "/Version:2 /Retry:true",
         "user": true
     }
 }

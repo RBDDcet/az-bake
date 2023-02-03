@@ -280,14 +280,10 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
     for i, choco_package in enumerate(choco_packages):
         logger.info(f'Building task scheduler {i}, {choco_package.id}')
         choco_args = get_choco_package_setup(choco_package)
-        choco_user_provisioner += f'      "{task_action} \'powershell.exe\''
-        pwsh_cmd_a = '-Command ""& {if (-not(choco list --exact '
-        pwsh_cmd_b = f'{pwsh_cmd_a} {choco_package.id} --local-only --limit-output))'
-        pwsh_cmd_c = ' {choco'
-        pwsh_cmd_d = '}}""'
-        final_cmd = f'{pwsh_cmd_b} {pwsh_cmd_c} {choco_args}{pwsh_cmd_d}'
-        choco_user_provisioner += f' -Argument \'{final_cmd}\'),`", \n'
-
+        choco_user_provisioner += f'      "{task_action} \'choco\''
+        choco_user_provisioner += f' -Argument \'{choco_args}\'),`", \n'
+    
+    choco_user_provisioner += f'      "{task_action} \'schtask\' -Argument \'/change /tn {task_id} /DISABLE\')", \n'
     choco_user_provisioner += '      "$trigger = New-ScheduledTaskTrigger -AtLogOn", \n'
     choco_user_provisioner += '      "$task = New-ScheduledTask -Action $action -Trigger $trigger", \n'
     choco_user_provisioner += f'      "Register-ScheduledTask \'{task_id}\' -InputObject $task -Force" \n'
