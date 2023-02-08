@@ -123,11 +123,26 @@ PKR_PROVISIONER_CHOCO_INSTALL = f'''
   provisioner "powershell" {{
     environment_vars = ["chocolateyUseWindowsCompression=false"]
     inline = [
+      "$InstallDir='C:/ProgramData/chocoportable'",
+      "$env:ChocolateyInstall='C:/ProgramData/chocoportable'",
       "(new-object net.webclient).DownloadFile('https://chocolatey.org/install.ps1', 'C:/Windows/Temp/chocolatey.ps1')",
       "C:/Windows/Temp/chocolatey.ps1"
     ]
   }}
   {BAKE_PLACEHOLDER}'''
+
+PKR_PROVISIONER_CHOCO_CONFIGURE = f'''
+  # Injected by az bake
+  provisioner "powershell" {{
+    elevated_user     = build.User
+    elevated_password = build.Password
+
+    inline = [
+      "choco feature disable -n showNonElevatedWarnings"
+    ]
+  }}
+  {BAKE_PLACEHOLDER}'''
+
 
 PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG = f'''
   # Injected by az bake

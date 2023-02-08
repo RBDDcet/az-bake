@@ -24,7 +24,8 @@ from ._constants import (BAKE_YAML_SCHEMA, DEVOPS_PIPELINE_CONTENT, DEVOPS_PIPEL
                          IMAGE_DEFAULT_BASE_WINDOWS, IMAGE_YAML_SCHEMA, IN_BUILDER)
 from ._data import Gallery, Image, Sandbox, get_dict
 from ._github import get_github_latest_release_version, get_github_release, get_release_templates, get_template_url
-from ._packer import (copy_packer_files, inject_choco_install_provisioners, inject_choco_machine_provisioners,
+from ._packer import (copy_packer_files, inject_choco_install_provisioners, inject_choco_configure_provisioners,
+                      inject_choco_machine_provisioners,
                       inject_choco_user_provisioners, inject_choco_machine_log_provisioners, inject_powershell_provisioner,
                       inject_update_provisioner, packer_execute, save_packer_vars_file)
 from ._repos import Repo
@@ -439,6 +440,7 @@ def bake_builder_build(cmd, sandbox: Sandbox = None, gallery: Gallery = None, im
         # install choco packages if packages
         if choco_packages:
             inject_choco_install_provisioners(image.dir)
+            inject_choco_configure_provisioners(image.dir)
 
         user_choco_packages = [package for package in choco_packages if package.user]
         if user_choco_packages:

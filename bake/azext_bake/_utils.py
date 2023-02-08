@@ -195,7 +195,7 @@ def get_choco_package_setup(package: ChocoPackage) -> str:
     pkg = get_dict(package)
     if 'user' in pkg:
         del pkg['user']
-    choco_setup_string = 'install '
+    choco_setup_string = 'choco install '
 
     for key in pkg:
         if key.__eq__("id"):
