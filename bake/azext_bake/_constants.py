@@ -141,6 +141,7 @@ PKR_PROVISIONER_CHOCO_CONFIGURE = f'''
 
     inline = [
       "choco feature disable -n showNonElevatedWarnings",
+      "choco feature enable -n allowGlobalConfirmation",
       "$Env:PATH += ';{CHOCO_USER_DIR}/bin'"
     ]
   }}

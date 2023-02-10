@@ -325,7 +325,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
     for i, choco_package in enumerate(choco_packages):
         logger.info(f'Building task scheduler {i}, {choco_package.id}')
         choco_args = get_choco_package_setup(choco_package)
-        powershell_args = f'-PackageId {choco_package.id} -FullInstall {choco_args}'
+        powershell_args = f'-PackageId {choco_package.id} -PackageArgs {choco_args}'
         action_args = f'-File {LOCAL_USER_DIR}/InstallChocoUser.ps1 {powershell_args}'
         choco_user_provisioner += f'      "{task_action} \'Powershell\''
         choco_user_provisioner += f' -Argument \'{action_args}\'),`", \n'
