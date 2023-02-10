@@ -19,8 +19,8 @@ from azure.cli.core.azclierror import ValidationError
 from ._constants import (BAKE_PLACEHOLDER, PKR_AUTO_VARS_FILE, PKR_BUILD_FILE, PKR_DEFAULT_VARS,
                          PKR_PROVISIONER_CHOCO_INSTALL, PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG,
                          PKR_PROVISIONER_CHOCO_CONFIGURE, PKR_PROVISIONER_RESTART, PKR_PROVISIONER_UPDATE,
-                         PKR_PROVISIONER_WINGET_INSTALL,
-                         PKR_VARS_FILE, WINGET_SETTINGS_FILE, WINGET_SETTINGS_JSON)
+                         PKR_PROVISIONER_WINGET_INSTALL, PKR_PROVISIONER_CHOCO_USER_INSTALL_SCRIPT,
+                         PKR_VARS_FILE, WINGET_SETTINGS_FILE, WINGET_SETTINGS_JSON, LOCAL_USER_DIR)
 from ._data import Gallery, Image, PowershellScript, Sandbox, WingetPackage, get_dict
 from ._utils import get_logger, get_templates_path, get_choco_package_setup
 
@@ -235,6 +235,11 @@ def inject_choco_machine_log_provisioners(image_dir: Path):
     _inject_provisioner(image_dir, PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG)
 
 
+def inject_choco_user_script_provisioners(image_dir: Path):
+    '''Injects the chocolatey user script provisioner into the packer build file'''
+    _inject_provisioner(image_dir, PKR_PROVISIONER_CHOCO_USER_INSTALL_SCRIPT)
+
+
 def inject_choco_machine_provisioners(image_dir: Path, choco_packages):
     '''Injects the chocolatey machine provisioner into the packer build file'''
 
@@ -268,6 +273,40 @@ def inject_choco_machine_provisioners(image_dir: Path, choco_packages):
             inject_powershell_provisioner(image_dir, choco_packages[current_index + 1:])
 
 
+# def inject_choco_user_provisioners(image_dir: Path, choco_packages):
+#     '''Injects the chocolatey user provisioner into the packer build file'''
+
+#     choco_user_provisioner = '''
+#   # Injected by az bake
+#   provisioner "powershell" {
+#     elevated_user     = build.User
+#     elevated_password = build.Password
+#     inline = [
+#       "Write-Host 'Setting up User installation via Active Setup'",
+# '''
+
+#     activesetup_id = uuid.uuid4()
+#     base_reg_key = 'HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Active Setup\\\\Installed Components\\\\'
+
+#     for i, choco_package in enumerate(choco_packages):
+#         choco_str = get_choco_package_setup(choco_package)
+#         key_name = f'\<{i}{activesetup_id}'
+#         base_reg_key_newitem = f'      "New-Item \'{base_reg_key}\' -Name {key_name}'
+#         base_reg_key_property = f'      "New-ItemProperty \'{base_reg_key}{key_name}\''
+
+#         choco_user_provisioner += f'{base_reg_key_newitem} -Value \'AZ Bake {choco_package.id} Setup\'", \n'
+#         choco_user_provisioner += f'{base_reg_key_property} -Name \'StubPath\' -Value \'{choco_str}\'"'
+
+#         if i < len(choco_packages) - 1:
+#             choco_user_provisioner += ',\n'
+
+#     choco_user_provisioner += f'''
+
+#     ]
+#   }}
+#   {BAKE_PLACEHOLDER}'''
+#     _inject_provisioner(image_dir, choco_user_provisioner)
+
 def inject_choco_user_provisioners(image_dir: Path, choco_packages):
     '''Injects the chocolatey user provisioner into the packer build file'''
 
@@ -277,24 +316,26 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
     elevated_user     = build.User
     elevated_password = build.Password
     inline = [
-      "Write-Host 'Setting up User installation via Active Setup'",
+      "Write-Host 'Setting up User installation via Task Scheduler'",
 '''
 
-    activesetup_id = uuid.uuid4()
-    base_reg_key = 'HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Active Setup\\\\Installed Components\\\\'
-
+    task_id = uuid.uuid4()
+    task_action = '(New-ScheduledTaskAction -Execute'
+    choco_user_provisioner += '      "$action = `", \n'
     for i, choco_package in enumerate(choco_packages):
-        choco_str = get_choco_package_setup(choco_package)
-        key_name = f'\<{i}{activesetup_id}'
-        base_reg_key_newitem = f'      "New-Item \'{base_reg_key}\' -Name {key_name}'
-        base_reg_key_property = f'      "New-ItemProperty \'{base_reg_key}{key_name}\''
+        logger.info(f'Building task scheduler {i}, {choco_package.id}')
+        choco_args = get_choco_package_setup(choco_package)
+        powershell_args = f'-PackageId {choco_package.id} -FullInstall {choco_args}'
+        action_args = f'-File {LOCAL_USER_DIR}/InstallChocoUser.ps1 {powershell_args}'
+        choco_user_provisioner += f'      "{task_action} \'Powershell\''
+        choco_user_provisioner += f' -Argument \'{action_args}\'),`", \n'
 
-        choco_user_provisioner += f'{base_reg_key_newitem} -Value \'AZ Bake {choco_package.id} Setup\'", \n'
-        choco_user_provisioner += f'{base_reg_key_property} -Name \'StubPath\' -Value \'{choco_str}\'"'
-
-        if i < len(choco_packages) - 1:
-            choco_user_provisioner += ',\n'
-
+    choco_user_provisioner += f'      "{task_action} \'schtask\' -Argument \'/change /tn {task_id} /DISABLE\')", \n'
+    choco_user_provisioner += '      "$trigger = New-ScheduledTaskTrigger -AtLogOn", \n'
+    choco_user_provisioner += '      "$user = \'$env:computername\\\\Remote Desktop Users\'", \n'
+    choco_user_provisioner += '      "$task = New-ScheduledTask -Action $action -Trigger $trigger -User $user", \n'
+    register_task_data = '-InputObject $task -Force -RunLevel Highest"'
+    choco_user_provisioner += f'      "Register-ScheduledTask \'{task_id}\' {register_task_data} \n'
     choco_user_provisioner += f'''
 
     ]

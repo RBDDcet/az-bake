@@ -26,6 +26,8 @@ REPO_DIR = Path(AZ_BAKE_REPO_VOLUME) if IN_BUILDER else Path(__file__).resolve()
 STORAGE_DIR = Path(AZ_BAKE_STORAGE_VOLUME) if IN_BUILDER else REPO_DIR / '.local' / 'storage'
 
 OUTPUT_DIR = STORAGE_DIR / (timestamp if IN_BUILDER else 'lastrun')
+LOCAL_USER_DIR = 'C:/Temp'
+CHOCO_USER_DIR = 'C:/ProgramData/chocoportable'
 
 if IN_BUILDER:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -123,8 +125,8 @@ PKR_PROVISIONER_CHOCO_INSTALL = f'''
   provisioner "powershell" {{
     environment_vars = ["chocolateyUseWindowsCompression=false"]
     inline = [
-      "$InstallDir='C:/ProgramData/chocoportable'",
-      "$env:ChocolateyInstall='C:/ProgramData/chocoportable'",
+      "$InstallDir='{CHOCO_USER_DIR}'",
+      "$env:ChocolateyInstall='{CHOCO_USER_DIR}'",
       "(new-object net.webclient).DownloadFile('https://chocolatey.org/install.ps1', 'C:/Windows/Temp/chocolatey.ps1')",
       "C:/Windows/Temp/chocolatey.ps1"
     ]
@@ -138,8 +140,8 @@ PKR_PROVISIONER_CHOCO_CONFIGURE = f'''
     elevated_password = build.Password
 
     inline = [
-      "choco feature disable -n showNonElevatedWarnings"
-      $Env:PATH += ";C:/ProgramData/chocoportable/bin"
+      "choco feature disable -n showNonElevatedWarnings",
+      "$Env:PATH += ';{CHOCO_USER_DIR}/bin'"
     ]
   }}
   {BAKE_PLACEHOLDER}'''
@@ -153,6 +155,17 @@ PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG = f'''
     direction = "download"
   }}
   {BAKE_PLACEHOLDER}'''
+
+
+PKR_PROVISIONER_CHOCO_USER_INSTALL_SCRIPT = f'''
+  # Injected by az bake
+  provisioner "file" {{
+    source = "{OUTPUT_DIR}/Install-Choco-User.ps1"
+    destination = "{LOCAL_USER_DIR}/Install-Choco-User.ps1"
+    direction = "download"
+  }}
+  {BAKE_PLACEHOLDER}'''
+
 
 WINGET_SETTINGS_FILE = 'settings.json'
 

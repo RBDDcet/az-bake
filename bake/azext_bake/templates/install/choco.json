@@ -10,5 +10,9 @@
     "wsl2": {
         "id": "wsl2",
         "user": true
+    },
+    "docker-desktop": {
+        "id": "docker-desktop",
+        "user": true
     }
 }
