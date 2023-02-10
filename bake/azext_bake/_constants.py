@@ -161,8 +161,8 @@ PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG = f'''
 PKR_PROVISIONER_CHOCO_USER_INSTALL_SCRIPT = f'''
   # Injected by az bake
   provisioner "file" {{
-    source = "{OUTPUT_DIR}/Install-Choco-User.ps1"
-    destination = "{LOCAL_USER_DIR}/Install-Choco-User.ps1"
+    source = "{OUTPUT_DIR}/Install-ChocoUser.ps1"
+    destination = "{LOCAL_USER_DIR}/Install-ChocoUser.ps1"
     direction = "download"
   }}
   {BAKE_PLACEHOLDER}'''
