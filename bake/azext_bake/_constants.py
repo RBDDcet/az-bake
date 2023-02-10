@@ -139,6 +139,7 @@ PKR_PROVISIONER_CHOCO_CONFIGURE = f'''
 
     inline = [
       "choco feature disable -n showNonElevatedWarnings"
+      $Env:PATH += ";C:/ProgramData/chocoportable/bin"
     ]
   }}
   {BAKE_PLACEHOLDER}'''

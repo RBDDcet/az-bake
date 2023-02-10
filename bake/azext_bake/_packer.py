@@ -285,7 +285,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
 
     for i, choco_package in enumerate(choco_packages):
         choco_str = get_choco_package_setup(choco_package)
-        key_name = f'<{i}{activesetup_id}'
+        key_name = f'\<{i}{activesetup_id}'
         base_reg_key_newitem = f'      "New-Item \'{base_reg_key}\' -Name {key_name}'
         base_reg_key_property = f'      "New-ItemProperty \'{base_reg_key}{key_name}\''
 
