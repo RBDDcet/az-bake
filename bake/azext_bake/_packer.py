@@ -332,9 +332,11 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
 
     choco_user_provisioner += f'      "{task_action} \'schtask\' -Argument \'/change /tn {task_id} /DISABLE\')", \n'
     choco_user_provisioner += '      "$trigger = New-ScheduledTaskTrigger -AtLogOn", \n'
-    choco_user_provisioner += '      "$user = \'$env:computername\\\\Remote Desktop Users\'", \n'
-    choco_user_provisioner += '      "$task = New-ScheduledTask -Action $action -Trigger $trigger -User $user", \n'
-    register_task_data = '-InputObject $task -Force -RunLevel Highest"'
+    group_principal = '\'$env:computername\\\\Remote Desktop Users\''
+    task_principal = f'New-ScheduledTaskPrincipal -GroupId {group_principal} -RunLevel Highest'
+    choco_user_provisioner += f'      "$user = {task_principal}", \n'
+    choco_user_provisioner += '      "$task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $user", \n'
+    register_task_data = '-InputObject $task -Force"'
     choco_user_provisioner += f'      "Register-ScheduledTask \'{task_id}\' {register_task_data} \n'
     choco_user_provisioner += f'''
 
