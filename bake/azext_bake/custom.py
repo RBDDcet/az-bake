@@ -27,7 +27,8 @@ from ._github import get_github_latest_release_version, get_github_release, get_
 from ._packer import (copy_packer_files, inject_choco_install_provisioners, inject_choco_configure_provisioners,
                       inject_choco_machine_provisioners, inject_choco_user_script_provisioners,
                       inject_choco_user_provisioners, inject_choco_machine_log_provisioners, inject_powershell_provisioner,
-                      inject_update_provisioner, packer_execute, save_packer_vars_file)
+                      inject_update_provisioner, packer_execute, save_packer_vars_file,
+                      inject_choco_user_consent_provisioners)
 from ._repos import Repo
 from ._sandbox import get_builder_subnet_id, get_sandbox_resource_names
 from ._utils import (copy_to_builder_output_dir, get_install_choco_packages,
@@ -445,6 +446,7 @@ def bake_builder_build(cmd, sandbox: Sandbox = None, gallery: Gallery = None, im
         user_choco_packages = [package for package in choco_packages if package.user]
         if user_choco_packages:
             inject_choco_user_script_provisioners(image.dir)
+            inject_choco_user_consent_provisioners(image.dir)
             inject_choco_user_provisioners(image.dir, user_choco_packages)
 
         machine_choco_packages = [package for package in choco_packages if not package.user]

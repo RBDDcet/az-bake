@@ -147,6 +147,17 @@ PKR_PROVISIONER_CHOCO_CONFIGURE = f'''
   }}
   {BAKE_PLACEHOLDER}'''
 
+PKR_PROVISIONER_CONSENTBEHAVIOR_LOWER = f'''
+  # Injected by az bake
+  provisioner "powershell" {{
+    elevated_user     = build.User
+    elevated_password = build.Password
+
+    inline = [
+      "Set-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System' -Name ConsentPromptBehaviorAdmin -Value 0 -type DWORD -ErrorAction Stop"
+    ]
+  }}
+  {BAKE_PLACEHOLDER}'''
 
 PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG = f'''
   # Injected by az bake
