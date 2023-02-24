@@ -261,7 +261,7 @@ def inject_choco_machine_provisioners(image_dir: Path, choco_packages):
 '''
     for i, choco_package in enumerate(choco_packages):
         current_index = i
-        choco_system_provisioner += f'      "choco install {choco_package.id}{get_choco_package_setup(choco_package)}"'
+        choco_system_provisioner += f'      "choco install {choco_package.id} {get_choco_package_setup(choco_package)}"'
 
         if i < len(choco_packages) - 1:
             choco_system_provisioner += ',\n'
@@ -300,7 +300,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
         base_reg_key_newitem = f'      "New-Item \'{base_reg_key}\' -Name {key_name}'
         base_reg_key_property = f'      "New-ItemProperty \'{base_reg_key}{key_name}\''
         script_value = f'Powershell -File {LOCAL_USER_DIR}/Install-ChocoUser.ps1'
-        stubpath_value = f'{script_value} -PackageId {choco_package.id} -PackageArguments{choco_str}'
+        stubpath_value = f'{script_value} -PackageId {choco_package.id} -PackageArguments \"{choco_str}\"'
         choco_user_provisioner += f'{base_reg_key_newitem} -Value \'AZ Bake {choco_package.id} Setup\'", \n'
         choco_user_provisioner += f'{base_reg_key_property} -Name \'StubPath\' -Value \'{stubpath_value}\'"'
 

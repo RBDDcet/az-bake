@@ -201,7 +201,7 @@ def get_choco_package_setup(package: ChocoPackage) -> str:
         if key.__ne__("id"):
             choco_setup_string += f" --{key} '{pkg[key]}'"
 
-    choco_setup_string += ' --yes --no-progress'
+    choco_setup_string += '--yes --no-progress'
     return choco_setup_string
 
 
