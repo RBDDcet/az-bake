@@ -26,7 +26,7 @@ REPO_DIR = Path(AZ_BAKE_REPO_VOLUME) if IN_BUILDER else Path(__file__).resolve()
 STORAGE_DIR = Path(AZ_BAKE_STORAGE_VOLUME) if IN_BUILDER else REPO_DIR / '.local' / 'storage'
 
 OUTPUT_DIR = STORAGE_DIR / (timestamp if IN_BUILDER else 'lastrun')
-LOCAL_USER_DIR = 'C:/Users/Public/Documents'
+LOCAL_USER_DIR = 'C:/Windows/Temp'
 CHOCO_USER_DIR = 'C:/ProgramData/chocoportable'
 
 if IN_BUILDER:
