@@ -171,10 +171,10 @@ PKR_PROVISIONER_CHOCO_MACHINE_INSTALL_LOG = f'''
 
 PKR_PROVISIONER_CHOCO_USER_INSTALL_SCRIPT = f'''
   # Injected by az bake
-  provisioner "file" {{
-    source = "{OUTPUT_DIR}/Install-ChocoUser.ps1"
-    destination = "{LOCAL_USER_DIR}/Install-ChocoUser.ps1"
-    direction = "download"
+  provisioner "powershell" {{
+    inline = [
+      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/RBDDcet/dev-box-images/rbest/ActiveSetup/scripts/Install-ChocoUser.ps1', 'C:/Windows/Temp/Install-ChocoUser.ps1')",
+    ]
   }}
   {BAKE_PLACEHOLDER}'''
 
