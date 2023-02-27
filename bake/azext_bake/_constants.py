@@ -26,7 +26,7 @@ REPO_DIR = Path(AZ_BAKE_REPO_VOLUME) if IN_BUILDER else Path(__file__).resolve()
 STORAGE_DIR = Path(AZ_BAKE_STORAGE_VOLUME) if IN_BUILDER else REPO_DIR / '.local' / 'storage'
 
 OUTPUT_DIR = STORAGE_DIR / (timestamp if IN_BUILDER else 'lastrun')
-LOCAL_USER_DIR = 'C:/Windows/Temp'
+LOCAL_USER_DIR = 'C:/Users/Public/Documents'
 CHOCO_USER_DIR = 'C:/ProgramData/chocoportable'
 
 if IN_BUILDER:
@@ -173,7 +173,7 @@ PKR_PROVISIONER_CHOCO_USER_INSTALL_SCRIPT = f'''
   # Injected by az bake
   provisioner "powershell" {{
     inline = [
-      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/RBDDcet/dev-box-images/rbest/ActiveSetup/scripts/Install-ChocoUser.ps1', 'C:/Windows/Temp/Install-ChocoUser.ps1')",
+      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/RBDDcet/dev-box-images/rbest/ActiveSetup/scripts/Install-ChocoUser.ps1', 'C:/Users/Public/Documents/Install-ChocoUser.ps1')",
     ]
   }}
   {BAKE_PLACEHOLDER}'''
