@@ -305,7 +305,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
         choco_user_provisioner += f'{base_reg_key_property} -Name \'StubPath\' -Value \'{stubpath_value}\'", \n'
 
     key_name = f'>9{activesetup_id}'
-    base_reg_key_newitem = f'      "New-Item \'{base_reg_key}\' -Name {key_name}'
+    base_reg_key_newitem = f'      "New-Item \'{base_reg_key}\' -Name \'{key_name}\''
     base_reg_key_property = f'      "New-ItemProperty \'{base_reg_key}{key_name}\''
     script_value = f'Powershell -File {LOCAL_USER_DIR}/Reset-AdminConsentBehavior.ps1'
     choco_user_provisioner += f'{base_reg_key_newitem} -Value \'AZ Bake Admin Behavior Setup\'", \n'
