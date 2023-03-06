@@ -173,8 +173,8 @@ PKR_PROVISIONER_CHOCO_USER_INSTALL_SCRIPT = f'''
   # Injected by az bake
   provisioner "powershell" {{
     inline = [
-      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/RBDDcet/dev-box-images/rbest/ActiveSetup/scripts/Install-ChocoUser.ps1', 'C:/Users/Public/Documents/Install-ChocoUser.ps1')",
-      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/RBDDcet/dev-box-images/rbest/ActiveSetup/scripts/Reset-AdminConsentBehavior.ps1', 'C:/Users/Public/Documents/Reset-AdminConsentBehavior.ps1')",
+      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/RBDDcet/az-bake/rbest/ActiveSetup/examples/scripts/Install-ChocoUser.ps1', 'C:/Users/Public/Documents/Install-ChocoUser.ps1')",
+      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/RBDDcet/az-bake/rbest/ActiveSetup/examples/scripts/Reset-AdminConsentBehavior.ps1', 'C:/Users/Public/Documents/Reset-AdminConsentBehavior.ps1')",
     ]
   }}
   {BAKE_PLACEHOLDER}'''
