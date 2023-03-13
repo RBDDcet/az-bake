@@ -17,7 +17,7 @@ except ImportError:
     logger.warn("Wheel is not available, disabling bdist_wheel hook")
 
 # Must match a HISTORY.rst entry. Test FE
-VERSION = '0.3.11'
+VERSION = '0.3.12'
 
 # The full list of classifiers is available at
 # https://pypi.python.org/pypi?%3Aaction=list_classifiers
