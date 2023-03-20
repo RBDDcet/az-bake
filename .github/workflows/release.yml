@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [main]
+    branches: [rbest/*]
     paths:
       # the version number changes in setup.py
       # so only release if that file has changed
@@ -86,6 +86,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Change Repo case
+        run: 'echo "REPO_LC=${REPO,,}" >>${GITHUB_ENV}'
+        env:
+          REPO: ${{ github.repository}}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         env:
@@ -101,5 +106,5 @@ jobs:
             BUILD_DATE=${{ env.BUILD_DATE }}
             IMAGE_VERSION=${{ env.IMAGE_VERSION }}
           tags: |
-            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}
+            ${{ env.IMAGE_REGISTRY }}/${{ env.REPO_LC }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_REGISTRY }}/${{ env.REPO_LC }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}
