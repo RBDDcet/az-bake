@@ -17,7 +17,7 @@ except ImportError:
     logger.warn("Wheel is not available, disabling bdist_wheel hook")
 
 # Must match a HISTORY.rst entry.
-VERSION = '0.3.11'
+VERSION = '0.3.12'
 
 # The full list of classifiers is available at
 # https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -50,7 +50,7 @@ setup(
     license='MIT',
     author='Microsoft Corporation',
     author_email='colbyw@microsoft.com',
-    url='https://github.com/colbylwilliams/az-bake',
+    url='https://github.com/rbddcet/az-bake',
     long_description=README + '\n\n' + HISTORY,
     classifiers=CLASSIFIERS,
     packages=find_packages(),

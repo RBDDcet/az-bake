@@ -3,6 +3,10 @@
 Release History
 ===============
 
+0.3.12
+++++++
+* User install - Active Setup
+
 0.3.11
 ++++++
 * Bug fixes and minor improvements
