@@ -51,7 +51,7 @@ index['extensions'] = {
                     'python.details': {
                         'contacts': [
                             {
-                                'email': 'colbyw@microsoft.com',
+                                'email': 'rbest@microsoft.com',
                                 'name': 'Microsoft Corporation',
                                 'role': 'author'
                             }

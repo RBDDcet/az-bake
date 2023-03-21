@@ -16,7 +16,7 @@ except ImportError:
     from distutils import log as logger
     logger.warn("Wheel is not available, disabling bdist_wheel hook")
 
-# Must match a HISTORY.rst entry. D
+# Must match a HISTORY.rst entry. E
 VERSION = '0.3.12'
 
 # The full list of classifiers is available at
@@ -49,7 +49,7 @@ setup(
     description='Microsoft Azure Command-Line Tools Custom Image Helper Extension',
     license='MIT',
     author='Microsoft Corporation',
-    author_email='colbyw@microsoft.com',
+    author_email='rbest@microsoft.com',
     url='https://github.com/rbddcet/az-bake',
     long_description=README + '\n\n' + HISTORY,
     classifiers=CLASSIFIERS,
