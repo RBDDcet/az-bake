@@ -16,8 +16,8 @@ except ImportError:
     from distutils import log as logger
     logger.warn("Wheel is not available, disabling bdist_wheel hook")
 
-# Must match a HISTORY.rst entry. E
-VERSION = '0.3.12'
+# Must match a HISTORY.rst entry. F
+VERSION = '0.3.13'
 
 # The full list of classifiers is available at
 # https://pypi.python.org/pypi?%3Aaction=list_classifiers
