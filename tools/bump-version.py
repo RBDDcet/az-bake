@@ -55,9 +55,9 @@ version_new = parse_version(f'{n_major}.{n_minor}.{n_patch}')
 print(f'bumping version: {version_old.public} -> {version_new.public}')
 
 fmt_setup = 'VERSION = \'{}\''
-fmt_readme = 'https://github.com/RBDDcet/az-bake/releases/latest/download/bake-{}-py3-none-any.whl'
-fmt_docker = 'https://github.com/RBDDcet/az-bake/releases/latest/download/bake-{}-py3-none-any.whl'
-# fmt_consts = 'https://github.com/RBDDcet/az-bake/releases/latest/download/bake-{}-py3-none-any.whl'
+fmt_readme = 'https://github.com/rbddcet/az-bake/releases/latest/download/bake-{}-py3-none-any.whl'
+fmt_docker = 'https://github.com/rbddcet/az-bake/releases/latest/download/bake-{}-py3-none-any.whl'
+# fmt_consts = 'https://github.com/rbddcet/az-bake/releases/latest/download/bake-{}-py3-none-any.whl'
 fmt_history = '{}\n++++++\n{}\n\n{}'
 
 

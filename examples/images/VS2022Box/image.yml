@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://github.com/RBDDcet/az-bake/releases/latest/download/image.schema.json
+# yaml-language-server: $schema=https://github.com/rbddcet/az-bake/releases/latest/download/image.schema.json
 name: VS2022Box
 description: Windows 11 Enterprise + M365 Apps + VS2022
 publisher: Contoso

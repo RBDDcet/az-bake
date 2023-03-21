@@ -14,13 +14,13 @@ ENV AZ_BAKE_IMAGE_BUILDER_VERSION=$IMAGE_VERSION
 
 LABEL maintainer="Microsoft" \
     org.opencontainers.image.created=$BUILD_DATE \
-    org.opencontainers.image.url="https://github.com/RBDDcet/az-bake" \
-    org.opencontainers.image.source="https://github.com/RBDDcet/az-bake" \
+    org.opencontainers.image.url="https://github.com/rbddcet/az-bake" \
+    org.opencontainers.image.source="https://github.com/rbddcet/az-bake" \
     org.opencontainers.image.version=$IMAGE_VERSION \
     org.opencontainers.image.vendor="Microsoft" \
     org.opencontainers.image.title="Bake Image Builder" \
     org.opencontainers.image.description="The Bake Image Builder is used to build images using packer." \
-    org.opencontainers.image.documentation="https://github.com/RBDDcet/az-bake/tree/rbest/ASInstallTest/builder" \
+    org.opencontainers.image.documentation="https://github.com/rbddcet/az-bake/tree/rbest/ASInstallTest/builder" \
     org.opencontainers.image.licenses="MIT" \
     org.label-schema.schema-version="1.0" \
     org.label-schema.vendor="Microsoft" \
@@ -28,17 +28,17 @@ LABEL maintainer="Microsoft" \
     org.label-schema.version=$IMAGE_VERSION \
     org.label-schema.license="MIT" \
     org.label-schema.description="The Bake Image Builder is used to build images using packer." \
-    org.label-schema.url="https://github.com/RBDDcet/az-bake" \
-    org.label-schema.usage="https://github.com/RBDDcet/az-bake/tree/rbest/ASInstallTest/builder" \
+    org.label-schema.url="https://github.com/rbddcet/az-bake" \
+    org.label-schema.usage="https://github.com/rbddcet/az-bake/tree/rbest/ASInstallTest/builder" \
     org.label-schema.build-date=$BUILD_DATE \
-    org.label-schema.vcs-url="https://github.com/RBDDcet/az-bake.git" \
-    org.label-schema.docker.cmd="docker run ghcr.io/RBDDcet/az-bake/builder:$IMAGE_VERSION"
+    org.label-schema.vcs-url="https://github.com/rbddcet/az-bake.git" \
+    org.label-schema.docker.cmd="docker run ghcr.io/rbddcet/az-bake/builder:$IMAGE_VERSION"
 
 # install packer
 RUN apk add --no-cache packer --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
 # install az-bake
-RUN az extension add --source https://github.com/RBDDcet/az-bake/releases/latest/download/bake-0.3.13-py3-none-any.whl -y
+RUN az extension add --source https://github.com/rbddcet/az-bake/releases/latest/download/bake-0.3.13-py3-none-any.whl -y
 
 # Terminate container on stop
 STOPSIGNAL SIGTERM
