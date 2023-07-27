@@ -46,7 +46,7 @@ with open('HISTORY.rst', 'r', encoding='utf-8') as f:
 setup(
     name='bake',
     version=VERSION,
-    description='Microsoft Azure Command-Line Tools Custom Image Helper Extension F',
+    description='Microsoft Azure Command-Line Tools Custom Image Helper Extension G',
     license='MIT',
     author='Microsoft Corporation',
     author_email='rbest@microsoft.com',
