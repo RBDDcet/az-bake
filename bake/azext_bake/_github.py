@@ -69,7 +69,7 @@ def github_release_version_exists(version, org='rbddcet', repo='az-bake'):
 def get_release_asset(asset_url, to_json=True):  # pylint: disable=inconsistent-return-statements
     for try_number in range(TRIES):
         try:
-            response = requests.get(asset_url, verify=(not should_disable_connection_verify()))
+            response = requests.get(asset_url, verify=not should_disable_connection_verify())
             if response.status_code == 200:
                 return response.json() if to_json else response
             msg = ERR_TMPL_NON_200.format(response.status_code, asset_url)
