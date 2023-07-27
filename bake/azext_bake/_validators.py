@@ -187,7 +187,7 @@ def repository_path_validator(cmd, ns):
 
         # if the repository provider is not specified, try to determine it from the git config
         git_config = _validate_file_path(git_path / 'config', 'git config')
-        config_lines = git_config.read_text(None).splitlines()
+        config_lines = git_config.read_text(None,None).splitlines()
         remote_url = None
         for line in config_lines:
             line_clean = line.strip()
