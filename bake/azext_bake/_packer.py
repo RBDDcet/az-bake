@@ -254,11 +254,16 @@ def inject_choco_machine_provisioners(image_dir: Path, choco_packages):
     inline = [
 '''
     for i, choco_package in enumerate(choco_packages):
-        current_index = i
+        current_index = i        
         choco_system_provisioner += f'      "choco install {choco_package.id} {get_choco_package_setup(choco_package)}"'
 
+        if choco_package.restart is True:
+            inject_restart = True
+            break
+        
         if i < len(choco_packages) - 1:
             choco_system_provisioner += ',\n'
+
 
     choco_system_provisioner += f'''
     ]
@@ -270,7 +275,7 @@ def inject_choco_machine_provisioners(image_dir: Path, choco_packages):
         inject_restart_provisioner(image_dir)
 
         if current_index < len(choco_packages) - 1:
-            inject_powershell_provisioner(image_dir, choco_packages[current_index + 1:])
+            inject_choco_machine_provisioners(image_dir, choco_packages[current_index + 1:])
 
 
 def inject_choco_user_provisioners(image_dir: Path, choco_packages):
@@ -288,7 +293,7 @@ def inject_choco_user_provisioners(image_dir: Path, choco_packages):
     activesetup_id = uuid.uuid4()
     base_reg_key = 'HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Active Setup\\\\Installed Components\\\\'
 
-    for i, choco_package in enumerate(choco_packages):
+    for i, choco_package in enumerate(choco_packages):        
         choco_str = get_choco_package_setup(choco_package)
         key_name = f'{i}{activesetup_id}'
         base_reg_key_newitem = f'      "New-Item \'{base_reg_key}\' -Name {key_name}'
