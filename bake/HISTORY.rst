@@ -3,6 +3,10 @@
 Release History
 ===============
 
+0.3.14
+++++++
+* Bug fixes and minor improvements
+
 0.3.13
 ++++++
 * Temp build
