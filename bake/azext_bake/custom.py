@@ -423,7 +423,7 @@ def bake_builder_build(cmd, sandbox: Sandbox = None, gallery: Gallery = None, im
     if not definition:
         logger.info(f'Image definition {image.name} does not exist. Creating...')
         definition = create_image_definition(cmd, gallery.resource_group, gallery.name, image.name,
-                                             image.publisher, image.offer, image.sku, image.hibernate, gallery_res.location)
+                                             image.publisher, image.offer, image.sku, gallery_res.location, hibernate=image.hibernate)
     elif image_version_exists(cmd, gallery.resource_group, gallery.name, image.name, image.version):
         raise CLIError('Image version already exists')
 
