@@ -250,7 +250,7 @@ def image_version_exists(cmd, resource_group_name: str, gallery_name: str, galle
 
 def create_image_definition(cmd, resource_group_name, gallery_name, gallery_image_name, publisher, offer, sku,
                             location=None, os_type='Windows', os_state='Generalized', end_of_life_date=None,
-                            description=None, tags=None):
+                            description=None, tags=None, hibernate=False):
     logger.info(f'Creating image definition {gallery_image_name} in gallery {gallery_name} ...')
 
     if location is None:
@@ -270,7 +270,8 @@ def create_image_definition(cmd, resource_group_name, gallery_name, gallery_imag
     # if any([plan_name, plan_publisher, plan_product]):
     #     purchase_plan = ImagePurchasePlan(name=plan_name, publisher=plan_publisher, product=plan_product)
     feature_list = [
-        GalleryImageFeature(name='SecurityType', value='TrustedLaunch')
+        GalleryImageFeature(name='SecurityType', value='TrustedLaunch'),
+        GalleryImageFeature(name='IsHibernateSupported', value=hibernate)
     ]
 
     image = GalleryImage(identifier=GalleryImageIdentifier(publisher=publisher, offer=offer, sku=sku),

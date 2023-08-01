@@ -281,6 +281,7 @@ class Image:
     install: Optional[ImageInstall] = None
     base: ImageBase = None
     update: bool = True
+    hibernate: bool = False
     # cli
     name: str = None
     dir: Path = None
@@ -307,6 +308,7 @@ class Image:
             raise ValidationError('Image base is required for non-Windows images')
 
         self.update = obj.get('update', True)
+        self.hibernate = obj.get('hibernate', False)
 
         if path:
             self.name = path.parent.name
