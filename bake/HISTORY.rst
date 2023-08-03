@@ -3,6 +3,10 @@
 Release History
 ===============
 
+0.3.16
+++++++
+* Bug fixes and minor improvements
+
 0.3.15
 ++++++
 * Add hibernate to image creation.
