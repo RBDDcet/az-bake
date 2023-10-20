@@ -5,7 +5,7 @@ Release History
 
 0.3.17
 ++++++
-* Rebuild with updated Azure CLi - to fix "Unable to get API version for type 'None' in profile 'latest'"
+* Rebuild with updated Azure CLi
 
 0.3.16
 ++++++
