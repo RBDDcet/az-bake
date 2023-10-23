@@ -39,6 +39,10 @@ def deploy_arm_template_at_resource_group(cmd, resource_group_name=None, templat
 
     from azure.cli.command_modules.resource.custom import JsonCTemplatePolicy, _prepare_deployment_properties_unmodified
 
+    logger.info(f'Deploy ARM cmd {cmd}')
+    logger.info(f'Deploy ARM template {template_file}')
+    logger.info(f'Deploy ARM uri {template_uri}')
+    logger.info(f'Deploy ARM parameters {parameters}')
     properties = _prepare_deployment_properties_unmodified(cmd, 'resourceGroup', template_file=template_file,
                                                            template_uri=template_uri, parameters=parameters,
                                                            mode='Incremental')
