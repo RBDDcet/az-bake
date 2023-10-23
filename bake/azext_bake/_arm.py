@@ -43,9 +43,13 @@ def deploy_arm_template_at_resource_group(cmd, resource_group_name=None, templat
     logger.info(f'Deploy ARM template {template_file}')
     logger.info(f'Deploy ARM uri {template_uri}')
     logger.info(f'Deploy ARM parameters {parameters}')
+
     properties = _prepare_deployment_properties_unmodified(cmd, 'resourceGroup', template_file=template_file,
                                                            template_uri=template_uri, parameters=parameters,
-                                                           mode='Incremental')
+                                                           mode='Incremental', rollback_on_error=None,
+                                                           no_prompt=False, template_spec=None, query_string=None)
+
+    logger.info(f'After Deploy ARM {cmd}')
     smc = cf_resources(cmd.cli_ctx)
     client = smc.deployments
 
