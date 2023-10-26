@@ -5,7 +5,7 @@ Release History
 
 0.3.17
 ++++++
-* Rebuild with updated Azure CLi
+* Changes to work with AZ CLI 2.53.0
 
 0.3.16
 ++++++

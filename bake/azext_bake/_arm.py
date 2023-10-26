@@ -37,19 +37,13 @@ def is_bicep_file(file_path):
 def deploy_arm_template_at_resource_group(cmd, resource_group_name=None, template_file=None,
                                           template_uri=None, parameters=None, no_wait=False):
 
-    from azure.cli.command_modules.resource.custom import JsonCTemplatePolicy, _prepare_deployment_properties_unmodified
-
-    logger.info(f'Deploy ARM cmd {cmd}')
-    logger.info(f'Deploy ARM template {template_file}')
-    logger.info(f'Deploy ARM uri {template_uri}')
-    logger.info(f'Deploy ARM parameters {parameters}')
+    from azure.cli.command_modules.resource.custom import JsonCTemplatePolicy
 
     properties = _prepare_deployment_properties_unmodified(cmd, 'resourceGroup', template_file=template_file,
                                                            template_uri=template_uri, parameters=parameters,
-                                                           mode='Incremental', rollback_on_error=None,
+                                                           mode='incremental', rollback_on_error=None,
                                                            no_prompt=False, template_spec=None, query_string=None)
 
-    logger.info(f'After Deploy ARM {cmd}')
     smc = cf_resources(cmd.cli_ctx)
     client = smc.deployments
 
@@ -91,6 +85,78 @@ def deploy_arm_template_at_resource_group(cmd, resource_group_name=None, templat
             sleep(5)
             continue
 
+def _prepare_deployment_properties_unmodified(cmd, deployment_scope, template_file=None, template_uri=None, parameters=None,
+                                              mode=None, rollback_on_error=None, no_prompt=False, template_spec=None, query_string=None):
+    
+    from azure.cli.core.parser import IncorrectUsageError
+    from azure.cli.command_modules.resource.custom import _prepare_template_uri_with_query_string, _remove_comments_from_json
+    from azure.cli.command_modules.resource.custom import _load_template_spec_template, _urlretrieve, _is_bicepparam_file_provided
+    from azure.cli.command_modules.resource.custom import _parse_bicepparam_file, validate_bicep_target_scope, run_bicep_command, read_file_content
+    from azure.cli.command_modules.resource.custom import _process_parameters, _get_missing_parameters, _prompt_for_parameters
+    
+    cli_ctx = cmd.cli_ctx
+    DeploymentProperties, TemplateLink, OnErrorDeployment = get_sdk(cli_ctx, ResourceType.MGMT_RESOURCE_RESOURCES,
+                                                                    'DeploymentProperties', 'TemplateLink',
+                                                                    'OnErrorDeployment', mod='models', mode='Incremental')
+    template_link = None
+    template_obj = None
+    on_error_deployment = None
+    template_content = None
+
+    if query_string and not template_uri:
+        raise IncorrectUsageError('please provide --template-uri if --query-string is specified')
+
+    if template_uri:
+        if query_string:
+            template_link = TemplateLink(uri=template_uri, query_string=query_string)
+            template_uri = _prepare_template_uri_with_query_string(template_uri=template_uri, input_query_string=query_string)
+        else:
+            template_link = TemplateLink(uri=template_uri)
+        template_obj = _remove_comments_from_json(_urlretrieve(template_uri).decode('utf-8'), file_path=template_uri)
+    elif template_spec:
+        template_link = TemplateLink(id=template_spec)
+        template_obj = _load_template_spec_template(cmd, template_spec)
+    elif _is_bicepparam_file_provided(parameters):
+        template_content, template_spec_id, bicepparam_json_content = _parse_bicepparam_file(cli_ctx, template_file, parameters)
+        if template_spec_id:
+            template_link = TemplateLink(id=template_spec_id)
+            template_obj = _load_template_spec_template(cmd, template_spec_id)
+        else:
+            template_obj = _remove_comments_from_json(template_content)
+
+        template_schema = template_obj.get('$schema', '')
+        validate_bicep_target_scope(template_schema, deployment_scope)
+    else:
+        template_content = (
+            run_bicep_command(cmd.cli_ctx, ["build", "--stdout", template_file])
+            if is_bicep_file(template_file)
+            else read_file_content(template_file)
+        )
+
+        template_obj = _remove_comments_from_json(template_content, file_path=template_file)
+
+        if is_bicep_file(template_file):
+            template_schema = template_obj.get('$schema', '')
+            validate_bicep_target_scope(template_schema, deployment_scope)
+
+    if rollback_on_error == '':
+        on_error_deployment = OnErrorDeployment(type='LastSuccessful')
+    elif rollback_on_error:
+        on_error_deployment = OnErrorDeployment(type='SpecificDeployment', deployment_name=rollback_on_error)
+
+    template_param_defs = template_obj.get('parameters', {})
+    template_obj['resources'] = template_obj.get('resources', [])
+
+    if _is_bicepparam_file_provided(parameters):
+        parameters = json.loads(bicepparam_json_content).get('parameters', {})
+    else:
+        parameters = _process_parameters(template_param_defs, parameters) or {}
+        parameters = _get_missing_parameters(parameters, template_obj, _prompt_for_parameters, no_prompt)
+        parameters = json.loads(json.dumps(parameters))
+
+    properties = DeploymentProperties(template=template_content, template_link=template_link,
+                                      parameters=parameters, mode=mode, on_error_deployment=on_error_deployment)
+    return properties
 
 def get_arm_output(outputs, key, raise_on_error=True):
     if not outputs:
