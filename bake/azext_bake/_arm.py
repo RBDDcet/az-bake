@@ -3,6 +3,7 @@
 # Licensed under the MIT License.
 # ------------------------------------
 # pylint: disable=logging-fstring-interpolation, protected-access, inconsistent-return-statements, raise-missing-from
+# pylint: disable=too-many-arguments, too-many-locals
 
 import json
 
@@ -34,15 +35,14 @@ def is_bicep_file(file_path):
     return file_path.lower().endswith(".bicep")
 
 
-def deploy_arm_template_at_resource_group(cmd, resource_group_name=None, template_file=None,
+def deploy_arm_template_at_resource_group(cmd, resource_group_name, template_file=None,
                                           template_uri=None, parameters=None, no_wait=False):
 
     from azure.cli.command_modules.resource.custom import JsonCTemplatePolicy
 
     properties = _prepare_deployment_properties_unmodified(cmd, 'resourceGroup', template_file=template_file,
                                                            template_uri=template_uri, parameters=parameters,
-                                                           mode='incremental', rollback_on_error=None,
-                                                           no_prompt=False, template_spec=None, query_string=None)
+                                                           mode='incremental', no_prompt=False)
 
     smc = cf_resources(cmd.cli_ctx)
     client = smc.deployments
@@ -85,19 +85,23 @@ def deploy_arm_template_at_resource_group(cmd, resource_group_name=None, templat
             sleep(5)
             continue
 
-def _prepare_deployment_properties_unmodified(cmd, deployment_scope, template_file=None, template_uri=None, parameters=None,
-                                              mode=None, rollback_on_error=None, no_prompt=False, template_spec=None, query_string=None):
-    
+
+def _prepare_deployment_properties_unmodified(cmd, deployment_scope, template_file, template_uri,
+                                              parameters, mode=None, rollback_on_error=None,
+                                              no_prompt=False, template_spec=None, query_string=None):
+
     from azure.cli.core.parser import IncorrectUsageError
-    from azure.cli.command_modules.resource.custom import _prepare_template_uri_with_query_string, _remove_comments_from_json
-    from azure.cli.command_modules.resource.custom import _load_template_spec_template, _urlretrieve, _is_bicepparam_file_provided
-    from azure.cli.command_modules.resource.custom import _parse_bicepparam_file, validate_bicep_target_scope, run_bicep_command, read_file_content
-    from azure.cli.command_modules.resource.custom import _process_parameters, _get_missing_parameters, _prompt_for_parameters
-    
+    from azure.cli.command_modules.resource.custom import (
+        _prepare_template_uri_with_query_string, _remove_comments_from_json, _load_template_spec_template,
+        _urlretrieve, _is_bicepparam_file_provided, _parse_bicepparam_file, validate_bicep_target_scope,
+        run_bicep_command, _process_parameters, _get_missing_parameters, _prompt_for_parameters,
+        read_file_content)
+
     cli_ctx = cmd.cli_ctx
     DeploymentProperties, TemplateLink, OnErrorDeployment = get_sdk(cli_ctx, ResourceType.MGMT_RESOURCE_RESOURCES,
                                                                     'DeploymentProperties', 'TemplateLink',
-                                                                    'OnErrorDeployment', mod='models', mode='Incremental')
+                                                                    'OnErrorDeployment', mod='models',
+                                                                    mode=mode)
     template_link = None
     template_obj = None
     on_error_deployment = None
@@ -109,7 +113,8 @@ def _prepare_deployment_properties_unmodified(cmd, deployment_scope, template_fi
     if template_uri:
         if query_string:
             template_link = TemplateLink(uri=template_uri, query_string=query_string)
-            template_uri = _prepare_template_uri_with_query_string(template_uri=template_uri, input_query_string=query_string)
+            template_uri = _prepare_template_uri_with_query_string(template_uri=template_uri,
+                                                                   input_query_string=query_string)
         else:
             template_link = TemplateLink(uri=template_uri)
         template_obj = _remove_comments_from_json(_urlretrieve(template_uri).decode('utf-8'), file_path=template_uri)
@@ -117,7 +122,8 @@ def _prepare_deployment_properties_unmodified(cmd, deployment_scope, template_fi
         template_link = TemplateLink(id=template_spec)
         template_obj = _load_template_spec_template(cmd, template_spec)
     elif _is_bicepparam_file_provided(parameters):
-        template_content, template_spec_id, bicepparam_json_content = _parse_bicepparam_file(cli_ctx, template_file, parameters)
+        template_content, template_spec_id, bicepparam_json_content = _parse_bicepparam_file(cli_ctx, template_file,
+                                                                                             parameters)
         if template_spec_id:
             template_link = TemplateLink(id=template_spec_id)
             template_obj = _load_template_spec_template(cmd, template_spec_id)
@@ -157,6 +163,7 @@ def _prepare_deployment_properties_unmodified(cmd, deployment_scope, template_fi
     properties = DeploymentProperties(template=template_content, template_link=template_link,
                                       parameters=parameters, mode=mode, on_error_deployment=on_error_deployment)
     return properties
+
 
 def get_arm_output(outputs, key, raise_on_error=True):
     if not outputs:
