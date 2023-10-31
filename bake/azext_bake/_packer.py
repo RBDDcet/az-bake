@@ -256,7 +256,7 @@ def inject_choco_machine_provisioners(image_dir: Path, choco_packages):
     for i, choco_package in enumerate(choco_packages):
         current_index = i
         choco_system_provisioner += f'      "choco install {choco_package.id} {get_choco_package_setup(choco_package)}"'
-        
+
         if choco_package.restart is True:
             inject_restart = True
             break

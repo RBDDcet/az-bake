@@ -187,7 +187,7 @@ def repository_path_validator(cmd, ns):
 
         # if the repository provider is not specified, try to determine it from the git config
         git_config = _validate_file_path(git_path / 'config', 'git config')
-        config_lines = git_config.read_text().splitlines()
+        config_lines = git_config.read_text('None', 'None').splitlines()
         remote_url = None
         for line in config_lines:
             line_clean = line.strip()
@@ -370,7 +370,7 @@ def templates_version_validator(cmd, ns):
 
         else:
             ns.version = ns.version or get_github_latest_release_version(prerelease=ns.prerelease)
-            ns.templates_url = f'https://github.com/colbylwilliams/az-bake/releases/download/{ns.version}/templates.json'
+            ns.templates_url = f'https://github.com/rbddcet/az-bake/releases/download/{ns.version}/templates.json'
 
 
 def yaml_out_validator(cmd, ns):

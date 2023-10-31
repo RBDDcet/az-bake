@@ -157,8 +157,8 @@ PKR_PROVISIONER_CHOCO_USER_INSTALL_SCRIPT = f'''
   # Injected by az bake
   provisioner "powershell" {{
     inline = [
-      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/colbylwilliams/az-bake/main/examples/scripts/Install-ChocoUser.ps1', 'C:/Users/Public/Documents/Install-ChocoUser.ps1')",
-      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/colbylwilliams/az-bake/main/examples/scripts/Reset-AdminConsentBehavior.ps1', 'C:/Users/Public/Documents/Reset-AdminConsentBehavior.ps1')",
+      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/rbddcet/az-bake/rbest/ASInstallTest/examples/scripts/Install-ChocoUser.ps1', 'C:/Users/Public/Documents/Install-ChocoUser.ps1')",
+      "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/rbddcet/az-bake/rbest/ASInstallTest/examples/scripts/Reset-AdminConsentBehavior.ps1', 'C:/Users/Public/Documents/Reset-AdminConsentBehavior.ps1')",
     ]
   }}
   {BAKE_PLACEHOLDER}'''
@@ -250,7 +250,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download --dir ${{ runner.temp }} --repo github.com/colbylwilliams/az-bake --pattern index.json
+          gh release download --dir ${{ runner.temp }} --repo github.com/rbddcet/az-bake --pattern index.json
           az extension add --yes --source $(jq -r '.extensions.bake[0].downloadUrl' ${{ runner.temp }}/index.json)
 
       - name: Run az bake
@@ -286,7 +286,7 @@ steps:
       AZURE_TENANT_ID: $(AZURE_TENANT_ID)
 
   - script: | # get the latest version of az bake from the github releases and install it
-      curl -L https://github.com/colbylwilliams/az-bake/releases/latest/download/index.json > $AGENT_TEMPDIRECTORY/index.json
+      curl -L https://github.com/rbddcet/az-bake/releases/latest/download/index.json > $AGENT_TEMPDIRECTORY/index.json
       az extension add --yes --source $(jq -r '.extensions.bake[0].downloadUrl' $AGENT_TEMPDIRECTORY/index.json)
     displayName: Install az bake
 
@@ -297,8 +297,8 @@ steps:
 '''
 
 
-BAKE_YAML_SCHEMA = '# yaml-language-server: $schema=https://github.com/colbylwilliams/az-bake/releases/latest/download/bake.schema.json'
-IMAGE_YAML_SCHEMA = '# yaml-language-server: $schema=https://github.com/colbylwilliams/az-bake/releases/latest/download/image.schema.json'
+BAKE_YAML_SCHEMA = '# yaml-language-server: $schema=https://github.com/rbddcet/az-bake/releases/latest/download/bake.schema.json'
+IMAGE_YAML_SCHEMA = '# yaml-language-server: $schema=https://github.com/rbddcet/az-bake/releases/latest/download/image.schema.json'
 
 
 IMAGE_YAML_COMMENTS = '''#  Required properties: (some may also be set in the images section of the bake.yaml file)

@@ -3,6 +3,30 @@
 Release History
 ===============
 
+0.3.17
+++++++
+* Changes to work with AZ CLI 2.53.0
+
+0.3.16
+++++++
+* Bug fixes and minor improvements
+
+0.3.15
+++++++
+* Add hibernate to image creation.
+
+0.3.14
+++++++
+* Bug fixes and minor improvements
+
+0.3.13
+++++++
+* Temp build
+
+0.3.12
+++++++
+* User install - Active Setup
+
 0.3.11
 ++++++
 * Bug fixes and minor improvements

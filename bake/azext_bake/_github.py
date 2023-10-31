@@ -21,7 +21,7 @@ TRIES = 3
 logger = get_logger(__name__)
 
 
-def get_github_releases(org='colbylwilliams', repo='az-bake', prerelease=False):
+def get_github_releases(org='rbddcet', repo='az-bake', prerelease=False):
     url = f'https://api.github.com/repos/{org}/{repo}/releases'
 
     version_res = requests.get(url, verify=not should_disable_connection_verify())
@@ -30,7 +30,7 @@ def get_github_releases(org='colbylwilliams', repo='az-bake', prerelease=False):
     return [v for v in version_json if v['prerelease'] == prerelease]
 
 
-def get_github_release(org='colbylwilliams', repo='az-bake', version=None, prerelease=False):
+def get_github_release(org='rbddcet', repo='az-bake', version=None, prerelease=False):
     if version and prerelease:
         raise MutuallyExclusiveArgumentError('Only use one of --version/-v | --pre')
 
@@ -53,13 +53,13 @@ def get_github_release(org='colbylwilliams', repo='az-bake', version=None, prere
     return version_res.json()
 
 
-def get_github_latest_release_version(org='colbylwilliams', repo='az-bake', prerelease=False):
+def get_github_latest_release_version(org='rbddcet', repo='az-bake', prerelease=False):
     logger.info(f'Getting latest release version from GitHub ({org}/{repo})')
     version_json = get_github_release(org, repo, prerelease=prerelease)
     return version_json['tag_name']
 
 
-def github_release_version_exists(version, org='colbylwilliams', repo='az-bake'):
+def github_release_version_exists(version, org='rbddcet', repo='az-bake'):
     logger.info(f'Checking if release version {version} exists on GitHub ({org}/{repo})')
     version_url = f'https://api.github.com/repos/{org}/{repo}/releases/tags/{version}'
     version_res = requests.get(version_url, verify=not should_disable_connection_verify())
@@ -69,7 +69,7 @@ def github_release_version_exists(version, org='colbylwilliams', repo='az-bake')
 def get_release_asset(asset_url, to_json=True):  # pylint: disable=inconsistent-return-statements
     for try_number in range(TRIES):
         try:
-            response = requests.get(asset_url, verify=(not should_disable_connection_verify()))
+            response = requests.get(asset_url, verify=not should_disable_connection_verify())
             if response.status_code == 200:
                 return response.json() if to_json else response
             msg = ERR_TMPL_NON_200.format(response.status_code, asset_url)
@@ -90,7 +90,7 @@ def get_release_asset(asset_url, to_json=True):  # pylint: disable=inconsistent-
 def get_release_templates(version=None, prerelease=False, templates_url=None):
     if templates_url is None:
         version = version or get_github_latest_release_version(prerelease=prerelease)
-        templates_url = f'https://github.com/colbylwilliams/az-bake/releases/download/{version}/templates.json'
+        templates_url = f'https://github.com/rbddcet/az-bake/releases/download/{version}/templates.json'
     logger.info(f'Getting templates.json from GitHub release ({version})')
     templates = get_release_asset(asset_url=templates_url)
     for k in ['builder', 'install', 'packer', 'sandbox']:
