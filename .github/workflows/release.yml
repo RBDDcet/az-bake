@@ -2,7 +2,9 @@ name: Release
 
 on:
   push:
-    branches: [main],[rbest/*]
+    branches:
+      - 'main'
+      - 'rbest/**'
     paths:
       # the version number changes in setup.py
       # so only release if that file has changed
