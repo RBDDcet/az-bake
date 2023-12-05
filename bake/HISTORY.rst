@@ -3,6 +3,10 @@
 Release History
 ===============
 
+0.3.18
+++++++
+* Fix to support Az CLI
+
 0.3.17
 ++++++
 * Changes to work with AZ CLI 2.53.0
